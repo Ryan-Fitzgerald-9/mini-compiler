@@ -1,4 +1,5 @@
 import enum
+import sys
 
 class Lexer:
     def __init__(self, source):
@@ -23,11 +24,12 @@ class Lexer:
 
     # Invalid token found, print error message and exit
     def abort(self, message):
-        pass
+        sys.exit("Lexing error. " + message)
 
     # Skip whitespace except new lines, use to indicate the end of a statement
     def skipWhitespace(self):
-        pass
+        while self.curChar == ' ' or self.curChar == '\t' or self.curChar == '\r':
+            self.nextChar()
 
     # Skip comments in code
     def skipComment(self):
@@ -35,6 +37,7 @@ class Lexer:
 
     # Return the next token
     def getToken(self):
+        self.skipWhitespace()
         token = None
 
         # Check first character for classification
@@ -46,13 +49,44 @@ class Lexer:
             token = Token(self.curChar, TokenType.ASTERISK)
         elif self.curChar == '/':
             token = Token(self.curChar, TokenType.SLASH)
+        elif self.curChar == '=':
+            # Check whether token is = or ==
+            if self.peek() == '=':
+                lastChar = self.curChar
+                self.nextChar()
+                token = Token(lastChar + self.curChar, TokenType.EQEQ)
+            else:
+                token = Token(self.curChar, TokenType.EQ)
+        elif self.curChar == '>':
+            # Check whether this is token is > or >=
+            if self.peek() == '=':
+                lastChar = self.curChar
+                self.nextChar()
+                token = Token(lastChar + self.curChar, TokenType.GTEQ)
+            else:
+                token = Token(self.curChar, TokenType.GT)
+        elif self.curChar == '<':
+                # Check whether this is token is < or <=
+                if self.peek() == '=':
+                    lastChar = self.curChar
+                    self.nextChar()
+                    token = Token(lastChar + self.curChar, TokenType.LTEQ)
+                else:
+                    token = Token(self.curChar, TokenType.LT)
+        elif self.curChar == '!':
+            if self.peek() == '=':
+                lastChar = self.curChar
+                self.nextChar()
+                token = Token(lastChar + self.curChar, TokenType.NOTEQ)
+            else:
+                self.abort("Expected !=, got !" + self.peek())
         elif self.curChar == '\n':
             token = Token(self.curChar, TokenType.NEWLINE)
         elif self.curChar == '\0':
             token = Token('', TokenType.EOF)
         else:
             # Unknown token
-            pass
+            self.abort("Unknown token: " + self.curChar)
 
         self.nextChar()
         return token

@@ -1,5 +1,7 @@
+import enum
+
 class Lexer:
-    def _init_(self, source):
+    def __init__(self, source):
         self.source = source + '\n'  # Source code to lex as a string
         self.curChar = ''
         self.curPos = -1
@@ -33,4 +35,64 @@ class Lexer:
 
     # Return the next token
     def getToken(self):
-        pass
+        token = None
+
+        # Check first character for classification
+        if self.curChar == '+':
+            token = Token(self.curChar, TokenType.PLUS)
+        elif self.curChar == '-':
+            token = Token(self.curChar, TokenType.MINUS)
+        elif self.curChar == '*':
+            token = Token(self.curChar, TokenType.ASTERISK)
+        elif self.curChar == '/':
+            token = Token(self.curChar, TokenType.SLASH)
+        elif self.curChar == '\n':
+            token = Token(self.curChar, TokenType.NEWLINE)
+        elif self.curChar == '\0':
+            token = Token('', TokenType.EOF)
+        else:
+            # Unknown token
+            pass
+
+        self.nextChar()
+        return token
+
+
+# Token contains original text and type
+class Token:
+    def __init__(self, tokenText, tokenKind):
+        self.text = tokenText   # Used to identifiers, strings, and numbers
+        self.kind = tokenKind   # Classification of token
+
+
+# TokenType is the enum for all the types of tokens.
+class TokenType(enum.Enum):
+	EOF = -1
+	NEWLINE = 0
+	NUMBER = 1
+	IDENT = 2
+	STRING = 3
+	# Keywords.
+	LABEL = 101
+	GOTO = 102
+	PRINT = 103
+	INPUT = 104
+	LET = 105
+	IF = 106
+	THEN = 107
+	ENDIF = 108
+	WHILE = 109
+	REPEAT = 110
+	ENDWHILE = 111
+	# Operators.
+	EQ = 201  
+	PLUS = 202
+	MINUS = 203
+	ASTERISK = 204
+	SLASH = 205
+	EQEQ = 206
+	NOTEQ = 207
+	LT = 208
+	LTEQ = 209
+	GT = 210
+	GTEQ = 211

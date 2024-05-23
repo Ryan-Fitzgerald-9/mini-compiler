@@ -1,5 +1,5 @@
 PYTHON="python3"
-COMPILER="minitest.py"
+COMPILER="minicompiler.py"
 CC="gcc"
 
 function comp {
